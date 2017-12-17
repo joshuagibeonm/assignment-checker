@@ -93,7 +93,7 @@ function cleanUp () {
   rm answer/*
 }
 
-function assignment-checker(){
+function main(){
   #Get Title Name for scoresheet log
   TITLE=$1
   TITLE=${TITLE:="NO TITLE"}
@@ -206,4 +206,4 @@ function assignment-checker(){
 exec 2>/dev/null
 
 environmentCheck
-assignment-checker
+main
