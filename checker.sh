@@ -1,5 +1,5 @@
 #!/bin/bash
-#filename: alpro.sh
+#filename: checker.sh
 #author: gibeon@joshuagibeon
 
 #Simple file create function
