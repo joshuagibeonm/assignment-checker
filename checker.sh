@@ -2,103 +2,95 @@
 #filename: alpro.sh
 #author: gibeon@joshuagibeon
 
-#Redirect all stderr to null
-exec 2>/dev/null
+#Simple file create function
+function fileCreate(){
+  echo -n "[`date +'%H:%M:%S'`] Checking $1 file "
+  if [ -f $1 ]; then
+    echo "[FOUND]"
+  else
+    echo "[NOT FOUND]"
+    echo -n "[`date +'%H:%M:%S'`] Creating $1 file "
+    touch $1
+    echo "[DONE]"
+  fi
+}
 
+#Simple folder create function
+function folderCreate(){
+  echo -n "[`date +'%H:%M:%S'`] Checking $1 folder "
+  if [ -d $1 ]; then
+    echo "[FOUND]"
+  else
+    echo "[NOT FOUND]"
+    echo -n "[`date +'%H:%M:%S'`] Creating $1 folder "
+    mkdir $1
+    echo "[DONE]"
+  fi
+}
+
+#Check all folder and file to ensure that all needed file and folder
+#is exist
 function environmentPrepare(){
   while true; do
-    read -p "Do you wish to prepare the enviroment for this program? [Y/N]" yn
+    echo "Do you wish to prepare the enviroment for this program? [Y/N]"
+    read yn
     case $yn in
         [Yy]* ) break;;
         [Nn]* ) exit;;
         * ) echo "Please answer yes or no.";;
     esac
   done
+  folderCreate testcase
+  folderCreate filelist
+  folderCreate answer
+  folderCreate output
+  fileCreate answer.cpp
+  fileCreate scoresheet.log
 
-  echo -n "[`date +'%H:%M:%S'`] Checking filelist folder "
-  if [ -d filelist ]; then
-    echo "[FOUND]"
-  else
-    echo "[NOT FOUND]"
-    echo -n "[`date +'%H:%M:%S'`] Creating filelist folder "
-    mkdir filelist
-    echo "[DONE]"
-  fi
-
-  echo -n "[`date +'%H:%M:%S'`] Checking testcase folder "
-  if [ -d testcase ]; then
-    echo "[FOUND]"
-  else
-    echo "[NOT FOUND]"
-    echo -n "[`date +'%H:%M:%S'`] Creating testcase folder "
-    mkdir testcase
-    echo "[DONE]"
-  fi
-
-  echo -n "[`date +'%H:%M:%S'`] Checking answer folder "
-  if [ -d answer ]; then
-    echo "[FOUND]"
-  else
-    echo "[NOT FOUND]"
-    echo -n "[`date +'%H:%M:%S'`] Creating answer folder "
-    mkdir answer
-    echo "[DONE]"
-  fi
-
-  echo -n "[`date +'%H:%M:%S'`] Checking output folder "
-  if [ -d output ]; then
-    echo "[FOUND]"
-  else
-    echo "[NOT FOUND]"
-    echo -n "[`date +'%H:%M:%S'`] Creating output folder "
-    mkdir output
-    echo "[DONE]"
-  fi
-  echo "Please Read the README file again and then re-run the script"
+  echo "Please read the README again and then re-run the script"
   exit
 }
 
+#simple folder checker function
+function folderCheck () {
+  echo -n "[`date +'%H:%M:%S'`] Checking $1 folder "
+  if [ -d $1 ]; then
+    echo "[FOUND]"
+  else
+    echo "[NOT FOUND]"
+    environmentPrepare
+    exit
+  fi
+}
+
+#Simple file checker function
+function fileCheck () {
+  echo -n "[`date +'%H:%M:%S'`] Checking $1 file "
+  if [ -f $1 ]; then
+    echo "[FOUND]"
+  else
+    echo "[NOT FOUND]"
+    environmentPrepare
+    exit
+  fi
+}
 
 #Function to check if the environment is ready or not
 #if the environment is not ready, the script will prompt
 #the user and then ask the user if he wants to prepare
 #the environment or not
 function environmentCheck () {
-  echo -n "[`date +'%H:%M:%S'`] Checking filelist folder "
-  if [ -d filelist ]; then
-    echo "[FOUND]"
-  else
-    echo "[NOT FOUND]"
-    environmentPrepare
-    exit
-  fi
+  folderCheck output
+  folderCheck answer
+  folderCheck testcase
+  folderCheck filelist
+  fileCheck answer.cpp
+  fileCheck scoresheet.log
+}
 
-  echo -n "[`date +'%H:%M:%S'`] Checking testcase folder "
-  if [ -d testcase ]; then
-    echo "[FOUND]"
-  else
-    echo "[NOT FOUND]"
-    environmentPrepare
-    exit
-  fi
-
-  echo -n "[`date +'%H:%M:%S'`] Checking answer folder "
-  if [ -d answer ]; then
-    echo "[FOUND]"
-  else
-    echo "[NOT FOUND]"
-    environmentPrepare
-    exit
-  fi
-
-  echo -n "[`date +'%H:%M:%S'`] Checking output folder "
-  if [ -d output ]; then
-    echo "[FOUND]"
-  else
-    echo "[NOT FOUND]"
-    environmentPrepare
-    exit
-  fi
+function cleanUp () {
+  rm answerexe
+  rm answer/*
 }
 
 function assignment-checker(){
@@ -125,6 +117,7 @@ function assignment-checker(){
   CHECK=$?
   if [ $CHECK != 0 ]; then
     echo "[ERROR] : $CHECK"
+    cleanUp
     exit
   else
     echo "[OK]"
@@ -139,6 +132,7 @@ function assignment-checker(){
     CHECK=$?
     if [ $CHECK != 0 ]; then
       echo "[ERROR] : $CHECK"
+      cleanUp
       exit
     else
       echo "[OK]"
@@ -153,6 +147,7 @@ function assignment-checker(){
   CHECK=$?
   if [ $CHECK != 0 ]; then
     echo "[ERROR] : $CHECK"
+    cleanUp
     exit
   else
     echo "[OK]"
@@ -204,9 +199,11 @@ function assignment-checker(){
     rm output/*
     rm ${fl}exe
   done
-  rm answerexe
-  rm answer/*
+  cleanUp
 }
+
+#Redirect all stderr to null
+exec 2>/dev/null
 
 environmentCheck
 assignment-checker
