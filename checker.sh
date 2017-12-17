@@ -3,7 +3,7 @@
 #author: gibeon@joshuagibeon
 
 #Simple file create function
-function fileCreate(){
+function fileCreate () {
   echo -n "[`date +'%H:%M:%S'`] Checking $1 file "
   if [ -f $1 ]; then
     echo "[FOUND]"
@@ -16,7 +16,7 @@ function fileCreate(){
 }
 
 #Simple folder create function
-function folderCreate(){
+function folderCreate () {
   echo -n "[`date +'%H:%M:%S'`] Checking $1 folder "
   if [ -d $1 ]; then
     echo "[FOUND]"
@@ -30,7 +30,7 @@ function folderCreate(){
 
 #Check all folder and file to ensure that all needed file and folder
 #is exist
-function environmentPrepare(){
+function environmentPrepare () {
   while true; do
     echo "Do you wish to prepare the enviroment for this program? [Y/N]"
     read yn
@@ -93,7 +93,7 @@ function cleanUp () {
   rm answer/*
 }
 
-function main(){
+function main () {
   #Get Title Name for scoresheet log
   TITLE=$1
   TITLE=${TITLE:="NO TITLE"}
